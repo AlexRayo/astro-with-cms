@@ -1,7 +1,8 @@
-// api/auth/index.js
+// api-src/auth/index.ts
 import crypto from 'crypto';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default function handler(req, res) {
+export default function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const state = crypto.randomBytes(16).toString('hex');
     const clientId = process.env.GITHUB_CLIENT_ID;
@@ -11,9 +12,8 @@ export default function handler(req, res) {
       return;
     }
 
-    // <-- CAMBIO: usar AUTH_BASE_URL si está definido, si no fallback a Vercel
     const base = process.env.AUTH_BASE_URL || `https://${process.env.VERCEL_URL || req.headers.host}`;
-    // --------------------------------------------------------------
+    console.log('redirect_uri ->', `${base}/api/auth/callback`);
 
     res.setHeader('Set-Cookie', `decap_oauth_state=${state}; HttpOnly; Path=/; Max-Age=300; SameSite=Lax; Secure`);
 
@@ -23,8 +23,6 @@ export default function handler(req, res) {
       scope: 'public_repo',
       state
     });
-
-    console.log('redirect_uri ->', `${base}/api/auth/callback`);
 
     res.writeHead(302, { Location: `https://github.com/login/oauth/authorize?${params.toString()}` });
     res.end();

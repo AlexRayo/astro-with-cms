@@ -4,12 +4,13 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && tsc -p tsconfig.api.json",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.14",
+    "@vercel/node": "^5.4.0",
     "astro": "^5.14.5",
     "tailwindcss": "^4.1.14"
   }

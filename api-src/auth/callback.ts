@@ -1,15 +1,13 @@
-// api/auth/callback.js
-export default async function handler(req, res) {
-  try {
-    // <-- mismo patrón: usar AUTH_BASE_URL si está definido
-    const base = process.env.AUTH_BASE_URL || `https://${process.env.VERCEL_URL || req.headers.host}`;
-    // (el base se usa en index para redirect_uri; aquí lo mantenemos por consistencia si lo necesitas)
+// api-src/auth/callback.ts
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  try {
     const { code, state: returnedState } = req.query || {};
     const cookies = (req.headers.cookie || '')
       .split(';')
       .map(c => c.trim())
-      .reduce((acc, cur) => {
+      .reduce<Record<string, string>>((acc, cur) => {
         const eq = cur.indexOf('=');
         if (eq === -1) return acc;
         const k = cur.slice(0, eq);
