@@ -42,20 +42,42 @@ export default async function handler(req, res) {
             res.end(`<h1>Auth error</h1><pre>${JSON.stringify(tokenJson)}</pre>`);
             return;
         }
+        // fragmento dentro de api/auth/callback (dev/debug seguro)
         res.setHeader('Content-Type', 'text/html');
         res.end(`
-      <script>
-        (function(){
-          const token = ${JSON.stringify(tokenJson)};
-          if (window.opener) {
-            window.opener.postMessage(token, location.origin);
-            window.close();
-          } else {
-            document.body.innerText = 'Authentication complete — you can close this window.';
-          }
-        })();
-      </script>
-    `);
+  <script>
+    (function(){
+      const token = ${JSON.stringify(tokenJson)};
+      console.log('callback: tokenJson ->', token);
+
+      if (window.opener) {
+        // Mensaje etiquetado para que el padre lo identifique sin confusiones
+        const message = { type: 'decap-auth', payload: token };
+
+        // Intentamos enviar al origin esperado
+        try {
+          window.opener.postMessage(message, location.origin);
+          console.log('postMessage to location.origin success');
+        } catch (e) {
+          console.error('postMessage to location.origin failed', e);
+        }
+
+        // Fallback temporal (para debug) — quita esto en prod cuando todo funcione
+        try {
+          window.opener.postMessage(message, '*');
+          console.log('postMessage to * success (debug fallback)');
+        } catch (e) {
+          console.error('postMessage to * failed', e);
+        }
+
+        // Cerrar popup
+        setTimeout(() => window.close(), 300);
+      } else {
+        document.body.innerText = 'Authentication complete — token: ' + JSON.stringify(token);
+      }
+    })();
+  </script>
+`);
     }
     catch (err) {
         console.error('auth/callback error:', err);
