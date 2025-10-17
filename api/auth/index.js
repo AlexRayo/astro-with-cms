@@ -1,22 +1,30 @@
 // api/auth/index.js
-const crypto = require('crypto');
+import crypto from 'crypto';
 
-module.exports = (req, res) => {
-  // generar state y guardarlo temporalmente en cookie (short-lived)
-  const state = crypto.randomBytes(16).toString('hex');
-  const clientId = process.env.GITHUB_CLIENT_ID;
-  const base = `https://${process.env.VERCEL_URL || req.headers.host}`;
+export default function handler(req, res) {
+  try {
+    const state = crypto.randomBytes(16).toString('hex');
+    const clientId = process.env.GITHUB_CLIENT_ID;
+    if (!clientId) {
+      console.error('Missing GITHUB_CLIENT_ID env var');
+      res.status(500).send('Server misconfigured: missing client id');
+      return;
+    }
 
-  // cookie segura (httpOnly) con duración corta (e.g., 5 min)
-  res.setHeader('Set-Cookie', `decap_oauth_state=${state}; HttpOnly; Path=/; Max-Age=300; SameSite=Lax; Secure`);
+    const base = `https://${process.env.VERCEL_URL || req.headers.host}`;
+    res.setHeader('Set-Cookie', `decap_oauth_state=${state}; HttpOnly; Path=/; Max-Age=300; SameSite=Lax; Secure`);
 
-  const params = new URLSearchParams({
-    client_id: clientId,
-    redirect_uri: `${base}/api/auth/callback`,
-    scope: 'repo', // ajusta permisos (public_repo, repo, etc.)
-    state
-  });
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: `${base}/api/auth/callback`,
+      scope: 'public_repo',
+      state
+    });
 
-  res.writeHead(302, { Location: `https://github.com/login/oauth/authorize?${params.toString()}` });
-  res.end();
-};
+    res.writeHead(302, { Location: `https://github.com/login/oauth/authorize?${params.toString()}` });
+    res.end();
+  } catch (err) {
+    console.error('auth/index error:', err);
+    res.status(500).send('Internal server error');
+  }
+}
