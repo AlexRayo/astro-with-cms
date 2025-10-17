@@ -24,6 +24,8 @@ export default function handler(req, res) {
       state
     });
 
+    console.log('redirect_uri ->', `${base}/api/auth/callback`);
+
     res.writeHead(302, { Location: `https://github.com/login/oauth/authorize?${params.toString()}` });
     res.end();
   } catch (err) {
