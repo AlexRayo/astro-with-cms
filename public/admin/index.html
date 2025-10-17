@@ -10,6 +10,23 @@
     <link href="/admin/config.yml" type="text/yaml" rel="cms-config-url" />
   </head>
   <body>
-    <script src="https://cdn.jsdelivr.net/npm/decap-cms@3.0.0/dist/decap-cms.js"></script>
+    <!-- arriba, antes del script de decap -->
+<script>
+  window.addEventListener('message', (event) => {
+    console.log('🔔 admin received postMessage:', {
+      origin: event.origin,
+      data: event.data
+    });
+    // también mostramos en la página (temporal)
+    const el = document.getElementById('__decap_debug');
+    if (el) el.innerText = JSON.stringify({ origin: event.origin, data: event.data }, null, 2);
+  });
+</script>
+
+<!-- espacio visible para debug -->
+<pre id="__decap_debug" style="position:fixed;right:8px;bottom:8px;z-index:9999;background:#fff;padding:8px;border:1px solid #ddd;max-width:400px;max-height:300px;overflow:auto;"></pre>
+
+<script src="https://cdn.jsdelivr.net/npm/decap-cms@3.0.0/dist/decap-cms.js"></script>
+
   </body>
 </html>
