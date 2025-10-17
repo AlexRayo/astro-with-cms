@@ -11,7 +11,10 @@ export default function handler(req, res) {
       return;
     }
 
-    const base = `https://${process.env.VERCEL_URL || req.headers.host}`;
+    // <-- CAMBIO: usar AUTH_BASE_URL si está definido, si no fallback a Vercel
+    const base = process.env.AUTH_BASE_URL || `https://${process.env.VERCEL_URL || req.headers.host}`;
+    // --------------------------------------------------------------
+
     res.setHeader('Set-Cookie', `decap_oauth_state=${state}; HttpOnly; Path=/; Max-Age=300; SameSite=Lax; Secure`);
 
     const params = new URLSearchParams({
