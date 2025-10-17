@@ -1,13 +1,15 @@
 # admin/config.yml
 backend:
   name: github     # opción: 'github' o 'git-gateway'
-  repo: TU_USUARIO/TU_REPO   # ej: alexrayo/mi-astro-site
+  repo: AlexRayo/astro-with-cms   # ej: alexrayo/mi-astro-site
   branch: main
+  base_url: "https://astro-with-cms.vercel.app" # dominio donde estará el proxy (ej: your-site.vercel.app)
+  auth_endpoint: "/api/auth"                 # ruta serverless (ver /api)
 
 media_folder: "public/uploads"   # donde Decap guardará imágenes en repo
 public_folder: "/uploads"        # ruta pública desde la web
 
-site_url: "https://tudominio.com" # opcional, ayuda con previews
+site_url: "https://astro-with-cms.vercel.app" # opcional, ayuda con previews
 
 collections:
   - name: "posts"
