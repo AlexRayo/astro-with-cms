@@ -1,0 +1,22 @@
+# admin/config.yml
+backend:
+  name: github     # opción: 'github' o 'git-gateway'
+  repo: TU_USUARIO/TU_REPO   # ej: alexrayo/mi-astro-site
+  branch: main
+
+media_folder: "public/uploads"   # donde Decap guardará imágenes en repo
+public_folder: "/uploads"        # ruta pública desde la web
+
+site_url: "https://tudominio.com" # opcional, ayuda con previews
+
+collections:
+  - name: "posts"
+    label: "Posts"
+    folder: "src/content/posts"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Publish Date", name: "date", widget: "datetime" }
+      - { label: "Draft", name: "draft", widget: "boolean", default: false }
+      - { label: "Body", name: "body", widget: "markdown" }
